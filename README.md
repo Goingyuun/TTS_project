@@ -48,3 +48,24 @@ TTS_Project/
 ├── .gitignore                    # Git 忽略文件
 ├── requirements.txt              # 项目依赖包列表
 └── README.md                     # 项目说明文件
+```
+## 数据说明
+### 数据来源：
+本项目使用了 VCTK 数据集 的 clean 部分，数据经过预处理后存储在 data/processed 文件夹中。
+
+### 数据内容：
+
+data/processed/audio/：预处理后的音频文件（统一采样率、单声道、截断处理等）。
+data/processed/mel/：提取的 Mel 频谱特征文件，格式为 .npy。
+data/indices/：数据索引文件（例如 CSV），记录了每个音频文件对应的说话人、文本、时长等信息。
+## 预处理和特征提取
+### 预处理流程：
+预处理代码位于 src/preprocessing/preprocess.py，主要完成：
+
+音频文件的重采样、静音去除、时长截断与归一化；
+保持原目录结构，输出预处理后的音频文件至 data/processed/audio/。
+### 特征提取：
+特征提取代码位于 src/preprocessing/extract_features.py，主要完成：
+
+通过 librosa 提取 Mel 频谱特征，并转换为对数刻度；
+输出特征文件（.npy 格式）至 data/processed/mel/。
