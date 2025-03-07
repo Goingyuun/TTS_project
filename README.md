@@ -80,12 +80,12 @@ data/indices/：数据索引文件（例如 CSV），记录了每个音频文件
 本项目主要依赖以下 Python 库：
 
 Python 3.9
-librosa
-numpy
-soundfile
-tqdm
-PyTorch
-其他依赖请参见 requirements.txt
+librosa  
+numpy  
+soundfile  
+tqdm  
+PyTorch  
+其他依赖请参见 requirements.txt  
 ## 使用说明
 1. 数据下载与预处理
 2. 模型训练
