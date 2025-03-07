@@ -69,3 +69,39 @@ data/indices/：数据索引文件（例如 CSV），记录了每个音频文件
 
 通过 librosa 提取 Mel 频谱特征，并转换为对数刻度；
 输出特征文件（.npy 格式）至 data/processed/mel/。
+## 模型训练与评估
+### 模型结构：
+模型代码存放于 src/models/，包括 FastSpeech2 和 HiFi-GAN 模型的实现。
+
+### 训练与评估：
+训练代码位于 src/training/train.py，评估代码位于 src/training/evaluate.py，具体训练步骤和参数设置请参阅代码注释。
+
+## 环境依赖
+本项目主要依赖以下 Python 库：
+
+Python 3.9
+librosa
+numpy
+soundfile
+tqdm
+PyTorch
+其他依赖请参见 requirements.txt
+## 使用说明
+1. 数据下载与预处理
+2. 模型训练
+3. 模型评估
+4. 运行
+## 引用
+如果你在研究或论文中使用了本项目代码，请引用：
+```latex
+@misc{YourProject2025,
+  author = {Your Name},
+  title = {TTS_Project: 智能语音识别与合成系统},
+  year = {2025},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/your_username/TTS_Project}}
+}
+```
+## 许可证
+本项目采用 MIT License 进行开源，详见 LICENSE 文件。
