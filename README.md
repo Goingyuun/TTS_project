@@ -55,8 +55,8 @@ TTS_Project/
 
 ### 数据内容：
 
-data/processed/audio/：预处理后的音频文件（统一采样率、单声道、截断处理等）。
-data/processed/mel/：提取的 Mel 频谱特征文件，格式为 .npy。
+data/processed/audio/：预处理后的音频文件（统一采样率、单声道、截断处理等）。/
+data/processed/mel/：提取的 Mel 频谱特征文件，格式为 .npy。/
 data/indices/：数据索引文件（例如 CSV），记录了每个音频文件对应的说话人、文本、时长等信息。
 ## 预处理和特征提取
 ### 预处理流程：
