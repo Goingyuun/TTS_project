@@ -27,6 +27,7 @@
 TTS_Project/
 ├── data/
 │   ├── raw/                      # 原始数据
+│   │   ├── txt/                  # 原始语音数据对应的文本信息
 │   ├── processed/                # 预处理后的数据
 │   │   ├── audio/                # 预处理后的音频文件
 │   │   └── mel/                  # 提取的 Mel 频谱特征 (.npy)
@@ -44,7 +45,8 @@ TTS_Project/
 │   │   ├── FastSpeech2.py        # FastSpeech2 模型代码
 │   │   └── HiFiGAN.py            # HiFi-GAN 模型代码
 │   └── utils/
-│       └── data_utils.py         # 辅助工具代码
+│       └── dataset.py            # 负责数据解析和加载
+│       └── data_loader.py        # 负责dataLoader的配置
 ├── .gitignore                    # Git 忽略文件
 ├── requirements.txt              # 项目依赖包列表
 └── README.md                     # 项目说明文件
