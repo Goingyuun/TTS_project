@@ -1,1 +1,6 @@
-nemo_toolkit[all] = 1.17.0
+torch==2.0.1
+torchaudio==2.0.2
+nemo_toolkit[all] == 1.17.0
+librosa==0.9.2
+gradio==3.34.0
+
