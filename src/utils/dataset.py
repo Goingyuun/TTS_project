@@ -31,7 +31,9 @@ class TTS_Dataset(Dataset):
         mel_path = os.path.join(self.mel_dir, row['mel_filename'])
         mel_spectrogram = np.load(mel_path)  # 加载 Mel 频谱
         mel_spectrogram = torch.tensor(mel_spectrogram, dtype=torch.float32)  # 转换为 Tensor
-        
+         # **确保 Mel 频谱的形状一致**
+        if mel_spectrogram.dim() == 2:
+            mel_spectrogram = mel_spectrogram.unsqueeze(0)  # 添加通道维度 (C=1)
         # 获取文本
         text = row['text']  # 文本信息
         
