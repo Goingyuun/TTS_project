@@ -11,6 +11,6 @@ def collate_fn(batch):
     return mel_spectrograms, texts, durations, speakers
 
 def get_dataloader(csv_path, mel_dir, batch_size=32, shuffle=True, num_workers=4):
-    dataset = TTSDataset(csv_path, mel_dir)
+    dataset = TTS_Dataset(csv_path, mel_dir)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=collate_fn)
     return dataloader
