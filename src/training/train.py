@@ -1,92 +1,41 @@
 # 文件路径: src/training/train.py
-import sys
+
 import os
-# 获取当前脚本所在目录的上级目录，即项目根目录
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-# 将项目根目录添加到 sys.path
-sys.path.append(project_root)
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import matplotlib.pyplot as plt
-from src.utils.data_loader import get_dataloader  
+from nemo.collections.tts.models import FastSpeech2Model
+from nemo.core import Trainer
 
+# 1. 加载 NVIDIA NeMo FastSpeech2 预训练模型
+# 注意：预训练模型名称根据 NeMo 版本和模型发布可能有所不同，这里假设使用 "tts_en_fastspeech2"
+model = FastSpeech2Model.from_pretrained("tts_en_fastspeech2")
 
-# 定义一个简化版的 Dummy 模型（模拟 FastSpeech2 的数据流）
-class DummyFastSpeech2(nn.Module):
-    def __init__(self, n_mels=80):
-        super(DummyFastSpeech2, self).__init__()
-        # 这里我们用一个简单的线性层来模拟处理
-        self.linear = nn.Linear(n_mels, n_mels)
+# 2. 冻结所有参数，只微调适配层（例如 speaker_encoder）
+for param in model.parameters():
+    param.requires_grad = False
+# 这里假设你只需要微调说话人嵌入层，实际项目中根据需求选择需要微调的部分
+model.speaker_encoder.requires_grad = True
 
-    def forward(self, x):
-        # 输入 x: (batch, time_steps, n_mels)
-        # 直接对最后一个维度进行线性变换
-        out = self.linear(x)
-        return out
+# 3. 准备数据加载器
+# 假设你已经在 src/utils/data_loader.py 中实现了 get_dataloader 函数
+from src.utils.data_loader import get_dataloader
 
+# 指定数据索引文件和 Mel 特征目录路径
+csv_path = "data/indices/index.csv"
+mel_dir = "data/processed/mel"
 
-def train_model():
-    # 超参数设置
-    num_epochs = 5
-    batch_size = 16
-    learning_rate = 0.001
-    n_mels = 80
+# 创建训练和验证数据加载器
+# 这里为了简单起见，使用相同的数据作为训练和验证数据，你可以根据需要分割数据
+train_loader = get_dataloader(csv_path, mel_dir, batch_size=8, shuffle=True, num_workers=0)
+val_loader = get_dataloader(csv_path, mel_dir, batch_size=8, shuffle=False, num_workers=0)
 
-    # 数据路径
-    csv_path = "data/indices/index.csv"
-    mel_dir = "data/processed/mel"
+# 4. 使用 NeMo 的 Trainer 搭建训练框架
+# 设置 devices=1（使用一块 GPU），并指定最大训练周期
+trainer = Trainer(devices=1, accelerator="gpu", max_epochs=10)
 
-    # 获取数据加载器
-    dataloader = get_dataloader(
-        csv_path, mel_dir, batch_size=batch_size, shuffle=True, num_workers=0
-    )
+# 开始训练
+trainer.fit(model, train_loader, val_loader)
 
-    # 模型、损失函数和优化器初始化
-    model = DummyFastSpeech2(n_mels=n_mels)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model.to(device)
+# 5. 训练结束后保存微调后的模型
+os.makedirs("checkpoints", exist_ok=True)
+model.save_to("checkpoints/finetuned_fastspeech2.nemo")
+print("训练完成并保存模型到 checkpoints/finetuned_fastspeech2.nemo")
 
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-
-    train_losses = []
-
-    # 基础训练循环
-    for epoch in range(num_epochs):
-        model.train()
-        epoch_loss = 0.0
-        for batch in dataloader:
-            # 解包数据：mel_batch 的形状为 (batch, time_steps, n_mels)
-            mel_batch, text_batch, duration_batch, speaker_batch = batch
-            mel_batch = mel_batch.to(device)
-
-            optimizer.zero_grad()
-            outputs = model(mel_batch)
-            loss = criterion(outputs, mel_batch)  # 以输入作为目标，验证数据流和损失计算
-            loss.backward()
-            optimizer.step()
-            epoch_loss += loss.item()
-
-        avg_loss = epoch_loss / len(dataloader)
-        train_losses.append(avg_loss)
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
-
-    # 绘制训练损失曲线
-    plt.figure(figsize=(8, 4))
-    plt.plot(range(1, num_epochs + 1), train_losses, marker="o", label="Training Loss")
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.title("Training Loss Curve")
-    plt.legend()
-    plt.savefig("training_loss_curve.png")
-    plt.show()
-
-    # 保存模型
-    os.makedirs("checkpoints", exist_ok=True)
-    torch.save(model.state_dict(), "checkpoints/dummy_fastspeech2.pth")
-    print("Training completed and model saved.")
-
-
-if __name__ == "__main__":
-    train_model()
