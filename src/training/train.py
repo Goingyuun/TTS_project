@@ -1,6 +1,10 @@
 # 文件路径: src/training/train.py
-
+import sys
 import os
+# 获取当前脚本所在目录的上级目录，即项目根目录
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+# 将项目根目录添加到 sys.path
+sys.path.append(project_root)
 import torch
 import torch.nn as nn
 import torch.optim as optim
