@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from dataset import TTSDataset  # 引入数据集类
+from .dataset import TTS_Dataset  # 引入数据集类
 
 def collate_fn(batch):
     """
