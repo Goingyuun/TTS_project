@@ -11,20 +11,32 @@ class TTS_Dataset(Dataset):
         初始化数据集，读取索引文件。
         :param csv_path: CSV 文件路径 (data/indices/index.csv)
         :param mel_dir: Mel 特征文件目录 (data/processed/mel)
-        """
+        
         self.data = pd.read_csv(csv_path)  # 读取 CSV
         self.mel_dir = mel_dir
+        """
+        self.data = []
+        with open(csv_path, 'r') as file:
+            for line in file:
+                line = line.strip().split(',')
+                text = line[1]
+                self.data.append(text)
 
     def __len__(self):
         """返回数据集大小"""
         return len(self.data)
 
     def __getitem__(self, idx):
+        text = self.data[idx]
+        # 可以添加额外的处理逻辑，如计算发音时长、说话人ID等
+        durations = [len(text)]  # 示例：假设每个文本的发音时长与文本长度成正比
+        speaker_id = 0  # 示例：假设所有语音来自同一说话人
+        return text, durations, speaker_id
         """
         获取一个样本
         :param idx: 样本索引
         :return: mel_spectrogram, text, duration, speaker_id
-        """
+        
         row = self.data.iloc[idx]
         
         # 读取 Mel 频谱特征
@@ -44,6 +56,7 @@ class TTS_Dataset(Dataset):
         speaker_id = row['speaker_id']
         
         return mel_spectrogram, text, duration, speaker_id
+        """
 """
 # 设定数据路径
 csv_file = "data/indices/index.csv"
