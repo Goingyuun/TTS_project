@@ -7,6 +7,9 @@ def collate_fn(batch):
     处理不同长度的文本数据
     """
     mel_spectrograms, texts, durations, speakers = zip(*batch)
+    # 打印形状，检查哪一维不匹配
+    for i, mel in enumerate(mel_spectrograms):
+        print(f"Sample {i}: Shape {mel.shape}")  
     mel_spectrograms = torch.nn.utils.rnn.pad_sequence(mel_spectrograms, batch_first=True, padding_value=0)
     durations = torch.tensor(durations, dtype=torch.float32)
     return mel_spectrograms, texts, durations, speakers
