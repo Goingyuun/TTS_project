@@ -1,9 +1,11 @@
 # 文件路径: src/training/train.py
-
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
 import torch
 import soundfile as sf
-import os
+
 
 # 加载 SpeechT5 模型及对应的声码器
 processor = SpeechT5Processor.from_pretrained("microsoft/speecht5_tts")
