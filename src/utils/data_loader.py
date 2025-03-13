@@ -4,9 +4,7 @@ from torch.utils.data import DataLoader
 from .dataset import TTS_Dataset  # 引入数据集类
 
 def collate_fn(batch):
-    """
     处理不同长度的文本数据
-    """
     texts, durations, speakers = zip(*batch)
     
     # 对文本进行 padding (如果需要的话，通常是处理词语长度不一的情况)
