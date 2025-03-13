@@ -5,6 +5,7 @@ import csv
 from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
 import torch
 import soundfile as sf
+from datasets import load_dataset
 
 # 添加项目根目录到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
@@ -22,6 +23,8 @@ dataloader = get_text_dataloader(txt_root="data/raw/txt", batch_size=1, shuffle=
 output_dir = "results/generated_speech"
 os.makedirs(output_dir, exist_ok=True)
 
+embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
+fixed_speaker_embedding = torch.tensor(embeddings_dataset[0]["xvector"]).unsqueeze(0)  # 选取第一个说话人的嵌入
 # CSV 文件记录生成的样本信息（包括文本、说话人、utterance、生成时长等）
 csv_output = os.path.join(output_dir, "generation_log.csv")
 with open(csv_output, mode="w", newline="", encoding="utf-8") as csvfile:
@@ -42,7 +45,7 @@ with open(csv_output, mode="w", newline="", encoding="utf-8") as csvfile:
         # 预处理文本，生成模型输入
         inputs = processor(text=text, return_tensors="pt")
         # 此处如果有自定义 speaker embedding 可以加载并传入，此处先设为 None
-        speech = model.generate_speech(inputs["input_ids"], speaker_embeddings=None, vocoder=vocoder)
+        speech = model.generate_speech(inputs["input_ids"], speaker_embeddings=fixed_speaker_embedding, vocoder=vocoder)
         
         # 记录推理结束时间
         end_time = time.time()
